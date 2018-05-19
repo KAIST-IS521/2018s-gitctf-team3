@@ -47,5 +47,5 @@ COPY flag /var/ctf/
 ADD ./service /src
 RUN cd /src; make
 WORKDIR /src
-ENTRYPOINT [ "./chatsrv", "--port=5000" ]
+ENTRYPOINT [ "./chatsrv", "--port=9999" ]
 
