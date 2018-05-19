@@ -28,9 +28,14 @@
 
 
 FROM debian:latest
+MAINTAINER Team3
 
 # ======================================
 # Install your package here
+RUN apt-get update && apt-get install -y \
+make \
+gcc  \
+xinetd
 # ======================================
 
 RUN mkdir -p /var/ctf
@@ -39,4 +44,8 @@ COPY flag /var/ctf/
 # ======================================
 # Build and run your service here
 # ======================================
+ADD ./service /src
+RUN cd /src; make
+WORKDIR /src
+ENTRYPOINT [ "./chatsrv", "--port=5000" ]
 
