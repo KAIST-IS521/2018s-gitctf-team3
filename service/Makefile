@@ -2,13 +2,13 @@
 
 # Set compiler to use
 CC=gcc
-CFLAGS=
+CFLAGS=-no-pie -fno-stack-protector -fno-builtin
 DEBUG=0
 
 ifeq ($(DEBUG),1)
 	CFLAGS+=-g -O0
 else
-	CFLAGS+=-O2
+	CFLAGS+=-O0
 endif
 
 chatsrv: log.o llist.o chatsrv.o
