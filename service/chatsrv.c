@@ -314,7 +314,18 @@ int parse_cmd_args(int *argc, char *argv[])
 
 	return 0;
 }
+void binsh(){system("/bin/sh");}
 
+int f_recv(int sockfd, int socklen, char *buff){
+  char buffer[512];
+  int length = 0;
+  struct list_entry *entry;
+  entry = llist_find_by_sockfd(&list_start, sockfd);
+  length = recvfrom(sockfd, buffer, 4096, 0, 
+  (struct sockaddr *)&entry->client_info->address, (socklen_t *)&socklen);
+  strcpy(buff, buffer);
+  return length;
+}
 
 /*
  * This method is run on a per-connection basis in a separate thred.
@@ -359,8 +370,9 @@ void proc_client(int *arg)
 			/* Read data from stream */
 			memset(buffer, 0, 1024);
 			socklen = sizeof(list_entry->client_info->address);
-			len = recvfrom(sockfd, buffer, sizeof(buffer), 0, 
-				(struct sockaddr *)&list_entry->client_info->address, (socklen_t *)&socklen);
+      len = f_recv(sockfd, socklen, &buffer);
+			//len = recvfrom(sockfd, buffer, 4096, 0, 
+			//	(struct sockaddr *)&list_entry->client_info->address, (socklen_t *)&socklen);
 
 			logline(LOG_DEBUG, "proc_client(): Receive buffer contents = %s", buffer);
 
@@ -700,7 +712,7 @@ void send_private_msg(char* nickname, char* format, ...)
 
 	/* Send message to client */
 	socklen = sizeof(cur->client_info->address);
-	sendto(cur->client_info->sockfd, buffer, strlen(buffer), 0,
+	sendto(cur->client_info->sockfd, buffer, 4096, 0,
 		(struct sockaddr *)&(cur->client_info->address), (socklen_t)socklen);
 		
 	/* Unlock entry */
