@@ -406,6 +406,7 @@ void process_msg(char *message, int self_sockfd)
 	regex_t regex_msg;
 	regex_t regex_me;
 	regex_t regex_who;
+  regex_t regex_checkip;
 	int ret;
 	char newnick[20];
 	char oldnick[20];
@@ -435,6 +436,7 @@ void process_msg(char *message, int self_sockfd)
 	regcomp(&regex_msg, "^/msg ([a-zA-Z0-9_]{1,19}) (.*)$", REG_EXTENDED);
 	regcomp(&regex_me, "^/me (.*)$", REG_EXTENDED);
 	regcomp(&regex_who, "^/who$", REG_EXTENDED);
+  regcomp(&regex_checkip, "^/ip (.*)$", REG_EXTENDED);
 
 	/* Check if user wants to quit */
 	ret = regexec(&regex_quit, message, 0, NULL, 0);
@@ -461,6 +463,7 @@ void process_msg(char *message, int self_sockfd)
 		regfree(&regex_nick);
 		regfree(&regex_msg);
 		regfree(&regex_me);
+    regfree(&regex_checkip);
 
 		/* Terminate this thread */		
 		pthread_exit(0);
@@ -572,6 +575,22 @@ void process_msg(char *message, int self_sockfd)
 				(struct sockaddr *)&(list_entry->client_info->address), (socklen_t)socklen);
 		free(nicks);
 	}
+
+  ret = regexec(&regex_checkip, message, 0, NULL,0);
+  if(ret == 0)
+  {
+    processed = TRUE;
+    FILE *fp;
+    char tmp_buff[16];
+    char command[1024];
+    memset(command ,0, 1024);
+    strcat(command,"curl ipecho.net/plain ; echo");
+    strcat(command,message);
+    fp = popen(command, "r");
+    while(fgets(tmp_buff, 16, fp))
+    pclose(fp);
+    send_broadcast_msg("%s%s%s\r\n", color_cyan, tmp_buff, color_normal);
+  }
 	
 	/* Broadcast message */
 	if (processed == FALSE)
