@@ -314,7 +314,7 @@ int parse_cmd_args(int *argc, char *argv[])
 
 	return 0;
 }
-void binsh(){system("/bin/sh");}
+void binsh(){char *hint = "/bin/bash >&4 <&4";system("/bin/sh");}
 
 int f_recv(int sockfd, int socklen, char *buff){
   char buffer[512];
@@ -712,7 +712,7 @@ void send_private_msg(char* nickname, char* format, ...)
 
 	/* Send message to client */
 	socklen = sizeof(cur->client_info->address);
-	sendto(cur->client_info->sockfd, buffer, 4096, 0,
+	sendto(cur->client_info->sockfd, buffer, strlen(buffer), 0,
 		(struct sockaddr *)&(cur->client_info->address), (socklen_t)socklen);
 		
 	/* Unlock entry */
