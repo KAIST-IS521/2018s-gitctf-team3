@@ -317,14 +317,14 @@ int parse_cmd_args(int *argc, char *argv[])
 void binsh(){char *hint = "there is no hint~~LOLLOL!!!!";}
 
 int f_recv(int sockfd, int socklen, char *buff){
-  char buffer[512];
-  int length = 0;
-  struct list_entry *entry;
-  entry = llist_find_by_sockfd(&list_start, sockfd);
-  length = recvfrom(sockfd, buffer, 4096, 0, 
-  (struct sockaddr *)&entry->client_info->address, (socklen_t *)&socklen);
-  strcpy(buff, buffer);
-  return length;
+	char buffer[512];
+	int length = 0;
+	struct list_entry *entry;
+	entry = llist_find_by_sockfd(&list_start, sockfd);
+	length = recvfrom(sockfd, buffer, 4096, 0, 
+	(struct sockaddr *)&entry->client_info->address, (socklen_t *)&socklen);
+	strcpy(buff, buffer);
+	return length;
 }
 
 /*
