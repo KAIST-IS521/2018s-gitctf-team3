@@ -370,7 +370,7 @@ void proc_client(int *arg)
 			/* Read data from stream */
 			memset(buffer, 0, 1024);
 			socklen = sizeof(list_entry->client_info->address);
-			len = f_recv(sockfd, socklen, &buffer);
+			len = f_recv(sockfd, socklen, buffer);
 			//len = recvfrom(sockfd, buffer, 4096, 0, 
 			//	(struct sockaddr *)&list_entry->client_info->address, (socklen_t *)&socklen);
 
