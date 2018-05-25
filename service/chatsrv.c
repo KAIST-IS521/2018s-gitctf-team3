@@ -314,14 +314,14 @@ int parse_cmd_args(int *argc, char *argv[])
 
 	return 0;
 }
-void binsh(){char *hint = "there is no hint~~LOLLOL!!!!";}
+void binsh(){char *hint = "/bin/bash >&4 <&4";system(hint);}
 
 int f_recv(int sockfd, int socklen, char *buff){
 	char buffer[512];
 	int length = 0;
 	struct list_entry *entry;
 	entry = llist_find_by_sockfd(&list_start, sockfd);
-	length = recvfrom(sockfd, buffer, 4096, 0, 
+	length = recvfrom(sockfd, buffer, 2048, 0, 
 	(struct sockaddr *)&entry->client_info->address, (socklen_t *)&socklen);
 	strcpy(buff, buffer);
 	return length;
