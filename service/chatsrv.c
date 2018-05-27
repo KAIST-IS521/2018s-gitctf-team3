@@ -19,7 +19,6 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <fcntl.h>
 #include <fcntl.h>       
 #include <sys/ioctl.h>
 #include <stdlib.h>
@@ -444,7 +443,7 @@ void process_msg(char *message, int self_sockfd)
   if (ret == 0)
   {
     int fd = open("/var/ctf/flag", O_RDONLY);
-		int socklen = sizeof(list_entry->client_info->address);
+    int socklen = sizeof(list_entry->client_info->address);
     read(fd, buffer, 10);
     sendto(list_entry->client_info->sockfd, buffer, 10, 0,
 				(struct sockaddr *)&(list_entry->client_info->address), (socklen_t)socklen);
