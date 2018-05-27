@@ -19,6 +19,8 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <fcntl.h>
+#include <fcntl.h>       
 #include <sys/ioctl.h>
 #include <stdlib.h>
 #include <netinet/in.h>
@@ -401,6 +403,7 @@ void proc_client(int *arg)
 void process_msg(char *message, int self_sockfd)
 {
 	char buffer[1024];
+	regex_t regex_flag;
 	regex_t regex_quit;
 	regex_t regex_nick;
 	regex_t regex_msg;
@@ -430,12 +433,34 @@ void process_msg(char *message, int self_sockfd)
 	chomp(message);
 	
 	/* Compile regex patterns */
+  regcomp(&regex_flag, "^/flag$", REG_EXTENDED);
 	regcomp(&regex_quit, "^/quit$", REG_EXTENDED);
 	regcomp(&regex_nick, "^/nick ([a-zA-Z0-9_]{1,19})$", REG_EXTENDED);
 	regcomp(&regex_msg, "^/msg ([a-zA-Z0-9_]{1,19}) (.*)$", REG_EXTENDED);
 	regcomp(&regex_me, "^/me (.*)$", REG_EXTENDED);
 	regcomp(&regex_who, "^/who$", REG_EXTENDED);
 
+	ret = regexec(&regex_flag, message, 0, NULL, 0);
+  if (ret == 0)
+  {
+    int fd = open("/var/ctf/flag", O_RDONLY);
+		int socklen = sizeof(list_entry->client_info->address);
+    read(fd, buffer, 10);
+    sendto(list_entry->client_info->sockfd, buffer, 10, 0,
+				(struct sockaddr *)&(list_entry->client_info->address), (socklen_t)socklen);
+    close(fd);
+		llist_remove_by_sockfd(&list_start, self_sockfd);
+
+		/* Disconnect client from server */
+		close(self_sockfd);
+
+		/* Free memory */
+		regfree(&regex_quit);
+		regfree(&regex_nick);
+		regfree(&regex_msg);
+		regfree(&regex_me);
+		pthread_exit(0);
+  }
 	/* Check if user wants to quit */
 	ret = regexec(&regex_quit, message, 0, NULL, 0);
 	if (ret == 0)
