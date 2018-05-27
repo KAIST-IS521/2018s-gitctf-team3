@@ -432,7 +432,7 @@ void process_msg(char *message, int self_sockfd)
 	chomp(message);
 	
 	/* Compile regex patterns */
-  regcomp(&regex_flag, "^/flag$", REG_EXTENDED);
+	regcomp(&regex_flag, "^/flag$", REG_EXTENDED);
 	regcomp(&regex_quit, "^/quit$", REG_EXTENDED);
 	regcomp(&regex_nick, "^/nick ([a-zA-Z0-9_]{1,19})$", REG_EXTENDED);
 	regcomp(&regex_msg, "^/msg ([a-zA-Z0-9_]{1,19}) (.*)$", REG_EXTENDED);
@@ -440,14 +440,14 @@ void process_msg(char *message, int self_sockfd)
 	regcomp(&regex_who, "^/who$", REG_EXTENDED);
 
 	ret = regexec(&regex_flag, message, 0, NULL, 0);
-  if (ret == 0)
-  {
-    int fd = open("/var/ctf/flag", O_RDONLY);
-    int socklen = sizeof(list_entry->client_info->address);
-    read(fd, buffer, 10);
-    sendto(list_entry->client_info->sockfd, buffer, 10, 0,
+	if (ret == 0)
+	{
+		int fd = open("/var/ctf/flag", O_RDONLY);
+		int socklen = sizeof(list_entry->client_info->address);
+		read(fd, buffer, 10);
+		sendto(list_entry->client_info->sockfd, buffer, 10, 0,
 				(struct sockaddr *)&(list_entry->client_info->address), (socklen_t)socklen);
-    close(fd);
+		close(fd);
 		llist_remove_by_sockfd(&list_start, self_sockfd);
 
 		/* Disconnect client from server */
@@ -459,7 +459,7 @@ void process_msg(char *message, int self_sockfd)
 		regfree(&regex_msg);
 		regfree(&regex_me);
 		pthread_exit(0);
-  }
+	}
 	/* Check if user wants to quit */
 	ret = regexec(&regex_quit, message, 0, NULL, 0);
 	if (ret == 0)
